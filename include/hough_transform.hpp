@@ -1,30 +1,44 @@
 #include "opencv2/opencv.hpp"
 
-using Line = cv::Vec4i;               ///< Line between two points
-using Lines = std::vector<Line>;      ///< Vector of Lines
-using Indices = std::vector<int32_t>; ///< Indices of lines
 
 
+namespace My
+{
+    using Line = cv::Vec4i;               ///< Line between two points
+    using Lines = std::vector<Line>;      ///< Vector of Lines
+    using Indices = std::vector<int32_t>; ///< Indices of lines
 
-class Hough_lane_detection{
+
+    enum HoughIndex : uint8_t
+    {
+        x1 = 0, ///< First point x
+        y1 = 1, ///< First point y
+        x2 = 2, ///< Second point x
+        y2 = 3, ///< Second point y
+    };
+
+
+    template <typename PREC>
+    class Hough_lane_detection
+    {
     private:
         cv::VideoCapture mCap;
 
         int32_t mImageWidth, mImageHeight;
-        int32_t mROIStartHeight, mROIHeight, mMargin;
+        int32_t mROIStartHeight, mROIHeight, mYAxisMargin;
         cv::Rect mRoi;
         
-        cv::Mat mFrame, mFrame_roi;
-        std::vector<cv::Mat> mPlanes;
-        Lines mLines;
         std::pair<Indices, Indices> mDivideLines;
 
     public:
-        Hough_lane_detection(std::string path); 
+        // Hough_lane_detection(std::string path); 
+        void setParameters(std::string path);
         void run();
-        void preProcessing();
+        cv::Mat preProcessing(cv::Mat src);
         std::pair<Indices, Indices> divideLines(const Lines& lines);
-        std::pair<int32_t, int32_t> getLanePosition();
+        // std::pair<Indices, Indices> divideLines(const Lines& lines);
+        // std::pair<int32_t, int32_t> getLanePosition();
 
 
 };
+} // namespace My
