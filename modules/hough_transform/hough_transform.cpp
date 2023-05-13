@@ -296,6 +296,12 @@ void Hough_lane_detection::run(){
     static constexpr int32_t hough_min = 20;
     static constexpr int32_t hough_max_gab = 0;
 
+    static int32_t left_track_start_point = 10;
+    static int32_t left_track_end_point = mImageWidth*0.25+50;
+    static int32_t right_track_start_point = mImageWidth*0.75-50;
+    static int32_t right_track_end_point = mImageWidth-10;
+
+
     cv::Mat frame, frame_roi;
     Lines lines;
     int32_t leftPositionX = 0;
@@ -322,10 +328,8 @@ void Hough_lane_detection::run(){
         leftPositionX = getLinePositionX(lines, hLeftLineIndices, true);
         rightPositionX = getLinePositionX(lines, hRightLineIndices, false);
 
-        getTrackPointX(leftPositionX, leftTrackPosx, 20, mImageWidth*0.25+50);
-        getTrackPointX(rightPositionX, rightTrackPosx, mImageWidth*0.75-50, mImageWidth-20);
-
-
+        getTrackPointX(leftPositionX, leftTrackPosx, left_track_start_point, left_track_end_point);
+        getTrackPointX(rightPositionX, rightTrackPosx, right_track_start_point, right_track_end_point);
 
 
         // cv::Rect ltrack_box(cv::Point(leftPositionX,mROIStartHeight+mROIHeight), cv::Point(leftPositionX,mROIStartHeight+mROIHeight+10));
@@ -351,8 +355,8 @@ void Hough_lane_detection::run(){
             cv::line(frame, cv::Point(x1,y1+mROIStartHeight), cv::Point(x2,y2+mROIStartHeight), cv::Scalar(255,0,0), 3, cv::LINE_AA);
         }
 
-        cv::rectangle(frame, cv::Point(mImageWidth*0.25-50,0), cv::Point(mImageWidth*0.25+50,480), cv::Scalar(255,0,0), 3, cv::LINE_AA);
-        cv::rectangle(frame, cv::Point(mImageWidth*0.75-50,0), cv::Point(mImageWidth*0.75+50,480), cv::Scalar(255,0,0), 3, cv::LINE_AA);
+        cv::rectangle(frame, cv::Point(left_track_start_point,0), cv::Point(left_track_end_point,480), cv::Scalar(255,0,0), 3, cv::LINE_AA);
+        cv::rectangle(frame, cv::Point(right_track_start_point,0), cv::Point(right_track_end_point,480), cv::Scalar(255,0,0), 3, cv::LINE_AA);
         
 
         cv::circle(frame, cv::Point(leftPositionX, mROIStartHeight+mROIHeight), 3, cv::Scalar(255,255,255), 3, cv::LINE_AA);
@@ -373,7 +377,7 @@ void Hough_lane_detection::run(){
         cv::imshow("frame", frame);
         cv::imshow("roi", frame_roi);
         
-        if(cv::waitKey(1) == 27) break;
+        if(cv::waitKey(20) == 27) break;
         if(mCap.get(cv::CAP_PROP_POS_FRAMES) == 1800){
             mCap.set(cv::CAP_PROP_POS_FRAMES, 1500);
         }
